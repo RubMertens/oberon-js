@@ -1,6 +1,6 @@
-# Kdg Live demo application
+# Live demo application
 
-This repo is for the rxjs version of our TI-conference days talk. Hope you enjoy(ed)!
+This repo is for the rxjs version of our reactive programming talk. Hope you enjoy(ed)!
 
 ## Complete is the completed version, Template is our template with which we start our talk 😊
 
