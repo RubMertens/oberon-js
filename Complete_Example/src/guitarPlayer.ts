@@ -1,164 +1,102 @@
 import {
-    catchError,
     concat,
-    concatMap,
-    delay, EMPTY, finalize,
+    delay,
     from,
-    interval,
-    map, mergeMap,
-    Observable, of, publish, range,
-    repeat, retry, share,
-    switchMap,
+    map,
+    Observable,
+    repeat,
+    retry,
+    share,
     take,
-    takeUntil, tap, throwError, timer,
-    zipWith
+    timer
 } from "rxjs";
 
-
-
-
 export class GuitarPlayer {
-    private play: Observable<string>;
+  private play: Observable<string>;
 
-    constructor() {
-        const songOne = ["G", "A", "B", "G"];
-        const songTwo = ["B", "C", "D"];
-        const playTwoSong$ = concat(this.playSong(songOne), this.playSong(songTwo));
-        this.play = range(10)
-            .pipe(
-                concatMap(i => playTwoSong$.pipe(delay(3000), map(n => n + i))),
-                share()
-            )
-    }
+  constructor() {
+    // const songOne = ["G", "A", "B", "G"];
+    // const songTwo = ["B", "C", "D"];
+    // const playTwoSong$ = concat(this.playSong(songOne), this.playSong(songTwo));
+    // this.play = range(10)
+    //     .pipe(
+    //         concatMap(i => playTwoSong$.pipe(delay(3000), map(n => n + i))),
+    //         share()
+    //     )
+  }
 
-    public playSong(notes: string[]) {
-        return interval(500)
-            .pipe(
-                map(i => notes[i]),
-                take(notes.length)
-            )
-    }
+  public listenToMePlay_0() {
+    const notes = ["G", "A", "B", "G"];
+    return from(notes);
+  }
 
-    public listenToMePlay(): Observable<string> {
-        return this.play;
-    }
+  public listenToMePlay_1() {
+    const notes = ["G", "A", "B", "G"];
+    return timer(0, 1000).pipe(
+      take(notes.length),
+      map((i) => notes[i])
+    );
+  }
 
-    public playSong2(song: Array<string>) {
-        return interval(200)
-            .pipe(
-                switchMap(i => {
-                    return of(song[i % song.length]).pipe(
-                        tap(this.occasionallyPlayAMistake),
-                        catchError(err => of("kaput"))
-                    )
-                }),
-                take(song.length),
-            );
-    }
+  public listenToMePlay_2() {
+    const notes = ["G", "A", "B", "G"];
+    return timer(0, 1000).pipe(
+      take(notes.length),
+      map((i) => notes[i]),
+      delay(500),
+      repeat()
+    );
+  }
 
-    public listenToMePlay0(): Observable<string> {
-        return from(["C"])
-            .pipe(
-                delay(1000),
-                repeat(),
-            )
-    }
+  public playSong_3(notes: string[]) {
+    return timer(0, 1000).pipe(
+      take(notes.length),
+      map((i) => notes[i])
+    );
+  }
+  public listenToMePlay_3() {
+    const songOne = ["G", "A", "B", "G"];
+    const songTwo = ["B", "C", "D"];
+    const playTwoSong$ = concat(
+      this.playSong_3(songOne),
+      this.playSong_3(songTwo)
+    ).pipe(delay(500), repeat());
+    return playTwoSong$;
+  }
 
-    public listenToMePlay1(): Observable<string> {
-        const notes = ["C", "D", "E", "C"];
-        return interval(1000)
-            .pipe(
-                map(i => notes[i % notes.length]),
-                take(notes.length),
-            );
-    }
+  public listenToMePlay_4() {
+    const songOne = ["G", "A", "B", "G"];
+    const songTwo = ["B", "C", "D"];
+    const playTwoSong$ = concat(
+      this.playSong_3(songOne),
+      this.playSong_3(songTwo)
+    ).pipe(delay(500), repeat());
 
-    private occasionallyPlayAMistake() {
-        const isWrong = Math.round(Math.random() * 2) === 0;
-        if (isWrong) throw new Error("KLABANG!");
-    }
-    public testing(){
-        return from(["A","b","c","d"])
-            .pipe(
-                
-            )
-    }
-    public werkendErrorDing_MaarMoeilijk() {
-        const notes = ["C", "D", "E", "C"];
-        const otherSong = ['F', 'G', 'A'];
+    return playTwoSong$.pipe(share());
+  }
 
-        const note$ = this.playSong(notes);
-        const otherSong$ = this.playSong(otherSong);
+  public playSong_5(notes: string[]) {
+    return timer(0, 1000).pipe(
+      take(notes.length),
+      map((i) => {
+        if (Math.random() > 0.8) throw new Error("klablang");
+        return notes[i];
+      }),
+      //   catchError((err) => {
+      //     return this.playSong_5(notes);
+      //   })
+      // catchError((err,caught) => caught)
+      retry()
+    );
+  }
 
-        const one$ = timer(0, 5000)
-            .pipe(
-                mergeMap(i => concat(note$, otherSong$)
-                    .pipe(
-                        map(n => n + i)
-                    )
-                ),
-                share()
-            );
-        const two$ = one$.pipe(
-            tap(this.occasionallyPlayAMistake),
-            catchError(err => one$)
-        )
-        return two$;
-        return timer(0, 5000)
-            .pipe(
-                mergeMap(i => concat(note$, otherSong$)
-                    .pipe(
-                        map(n => n + i)
-                    )
-                ),
-                tap(this.occasionallyPlayAMistake),
-                switchMap(n => of(n).pipe(
-                    catchError(err => of(undefined))
-                )),
-                share(),
-                // catchError((err, caught) => {
-                //     console.log("tis kupt");
-                //     return caught;
-                // }),
+  public listenToMePlay_5() {
+    const songOne = ["G", "A", "B", "G"];
+    const songTwo = ["B", "C", "D"];
+    const playTwoSong$ = concat(
+      this.playSong_5(songOne),
+      this.playSong_5(songTwo)
+    ).pipe(delay(500), repeat());
 
-            );
-    }
-
-    public listenToMePlay2(): Observable<string> {
-        const notes = ["C", "D", "E", "C"];
-        const otherSong = ['F', 'G', 'A'];
-
-        const note$ = this.playSong(notes);
-        const otherSong$ = this.playSong(otherSong);
-
-        return timer(0, 5000)
-            .pipe(
-                mergeMap(i => concat(note$, otherSong$)
-                    .pipe(map(n => n + i))),
-                tap(this.occasionallyPlayAMistake),
-                catchError((err, caught) => {
-                    console.error("tis kaput");
-                    return of("VALSE NOOT");
-                })
-            )
-    }
-
-    public listenToMePlay3(): Observable<string> {
-        return this.play
-    }
-
-    public playSongSimple(notes: string[]) {
-        // return from(["A","B","C"])
-        //     .pipe(
-        //         concatMap(n => of(n).pipe(delay(1000)))
-        //     )
-
-        return timer(0, 500)
-            .pipe(
-                map(i => notes[i % notes.length]),
-                take(notes.length)
-            )
-    }
-
-
+    return playTwoSong$.pipe(share());
 }
